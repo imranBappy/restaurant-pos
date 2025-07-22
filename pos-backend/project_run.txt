@@ -3,6 +3,11 @@ Note:
 accounts and outlet app has shared. Because, We need to create super user in public schema and tenant schema. user has Foreing Key with outlet
 That's why i have share outlet also.
 
+Curculr import error product with inventoy and kitchen
+You have comment out all relateion between them
+after that stape by stape you have migrate them
+
+
 Project Run for windows
 project_run.bat
 
@@ -11,6 +16,7 @@ Project Run for Linux
 project_run.sh
 
 Tenant Create Command 
-py manage.py createtenant --schema_name demo --email admin@gmail.com --password pass123
-
-py manage.py createtenant --schema_name test --email test@gmail.com --password pass123
+py manage.py createtenant --name kfc --email admin@gmail.com --password pass123
+py manage.py createtenant --name test --email test@gmail.com --password pass123
+py manage.py createtenant --name demo --email demo@gmail.com --password pass123
+py manage.py createtenant --name demo2 --email demo3@gmail.com --password pass123

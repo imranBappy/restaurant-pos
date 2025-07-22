@@ -1,5 +1,5 @@
 from django import forms
-from  apps.product.models import Ingredient, Coupon, Product, Category, Order, OrderProduct, FloorTable,Floor, Payment
+from  apps.product.models import Ingredient, Coupon, Product, Category, Order, OrderProduct, FloorTable,Floor, Payment, PaymentMethod, OrderChannel
 
 
 
@@ -62,3 +62,18 @@ class CouponForm(forms.ModelForm):
     class Meta:
         model = Coupon
         fields = '__all__'
+        
+        
+class PaymentMethodForm(forms.ModelForm):
+    id = forms.CharField(required=False)
+    class Meta:
+        model = PaymentMethod
+        fields = '__all__'
+
+class OrderChannelForm(forms.ModelForm):
+    id = forms.CharField(required=False)
+    class Meta:
+        model = OrderChannel
+        fields = '__all__'
+        
+        

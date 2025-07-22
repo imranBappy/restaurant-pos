@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useContext, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import CategoryCard from '@/app/orders/components/pos/category-card';
+import CategoryCard from '@/app/(order)/components/pos/category-card';
 import { CATEGORY_TYPE } from '@/graphql/product';
 import { SidebarContext } from '@/components/ui/sidebar';
 import { useQuery } from '@apollo/client';

@@ -17,6 +17,12 @@ from apps.product.tasks import release_expired_bookings, booking_expired
 from graphql import GraphQLError
 import random
 import string
+from .forms import PaymentMethodForm
+from apps.product.models import PaymentMethod
+# from .objectType import PaymentMethodType
+from .forms import OrderChannelForm
+from apps.product.models import OrderChannel
+# from .objectType import OrderChannelType
 
 
 
@@ -819,6 +825,52 @@ class DeleteIngredient(graphene.Mutation):
         ingredient = get_object_by_kwargs(Ingredient, {"id": id})
         ingredient.delete()
         return DeleteIngredient(success=True, message="Deleted!")
+    
+
+class UpsertPaymentMethod(DjangoFormMutation):
+    message = graphene.String()
+    success = graphene.Boolean()
+
+    class Meta:
+        form_class = PaymentMethodForm
+
+    @isAuthenticated([UserRole.ADMIN, UserRole.MANAGER])
+    def mutate_and_get_payload(self, info, **input):
+        instance = get_object_or_none(PaymentMethod, id=input.get('id'))
+        form = PaymentMethodForm(input, instance=instance)
+        
+        if form.is_valid():
+            payment_method = form.save()
+            return UpsertPaymentMethod(
+                message="Created/Updated successfully",
+                success=True,
+                # payment_method=payment_method
+            )
+        create_graphql_error(form)
+
+
+class UpsertOrderChannel(DjangoFormMutation):
+    message = graphene.String()
+    success = graphene.Boolean()
+    # order_channel = graphene.Field(OrderChannelType)
+
+    class Meta:
+        form_class = OrderChannelForm
+
+    @isAuthenticated([UserRole.ADMIN, UserRole.MANAGER])
+    def mutate_and_get_payload(self, info, **input):
+        instance = get_object_or_none(OrderChannel, id=input.get('id'))
+        form = OrderChannelForm(input, instance=instance)
+        print(form.errors)
+        if form.is_valid():
+            order_channel = form.save()
+            return UpsertOrderChannel(
+                message="Created/Updated successfully",
+                success=True,
+                # order_channel=order_channel
+            )
+        create_graphql_error(form)
+
 
 class Mutation(graphene.ObjectType):
     product_cud = ProductCUD.Field()
@@ -836,3 +888,5 @@ class Mutation(graphene.ObjectType):
     check_ingredient_available = CheckIngredientAvailable.Field()
     order_cuv2 = OrderCUV2.Field()
     order_cancel = OrderCancel.Field()
+    upsert_payment_method = UpsertPaymentMethod.Field()
+    upsert_order_channel = UpsertOrderChannel.Field()

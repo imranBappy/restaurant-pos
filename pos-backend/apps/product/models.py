@@ -1,8 +1,7 @@
 from django.db import models
 from apps.accounts.models import User
 from apps.outlet.models import Outlet
-from apps.kitchen.models import Kitchen
-
+from apps.kitchen.models import Kitchen, KitchenOrder
 
 from django.utils.timezone import now
 from datetime import timedelta
@@ -21,12 +20,9 @@ class ORDER_STATUS_CHOICES(models.TextChoices):
     COMPLETED = 'COMPLETED', 'Completed'
     CANCELLED = 'CANCELLED', 'Cancelled'
     DUE = 'DUE', 'Due'
+    VOIDED = 'VOIDED', 'Voided'
 
 
-PAYMENT_METHOD_CHOICES = [
-        ("CASH", "Cash"),
-        ("CARD", "Card"),
-    ]
 
 class PAYMENT_STATUS_CHOICES(models.TextChoices):
     PENDING = 'PENDING', 'Pending'
@@ -214,9 +210,51 @@ class Coupon(models.Model):
     
     def __str__(self):
         return f"{self.id} - {self.code}"
+    
+class ORDER_CHANNEL_TYPE_CHOICES(models.TextChoices):
+    DELIVERY_PLATFORM = 'DELIVERY_PLATFORM', 'Delivery Platform' # e.g., Foodpanda, Pathao
+    DINE_IN = 'DINE_IN', 'Dine In'
+    PICKUP = 'PICKUP', 'Pickup'
+    WEBSITE = 'WEBSITE', 'Website Orders'
+    PHONE = 'PHONE', 'Phone Orders'
+    SOCIAL_MEDIA = 'SOCIAL_MEDIA', 'Social Media'
+    OTHER = 'OTHER', 'Other'
+
+
+class OrderChannel(models.Model):
+    name = models.CharField(max_length=100, unique=True, help_text="e.g., Foodpanda, Pathao, Dine In")
+    type = models.CharField(
+        max_length=50,
+        choices=ORDER_CHANNEL_TYPE_CHOICES.choices,
+        default=ORDER_CHANNEL_TYPE_CHOICES.DELIVERY_PLATFORM
+    )
+    commission_rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
+        help_text="Commission rate in percentage (e.g., 30.00 for 30%)"
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.type})"
+
+    class Meta:
+        verbose_name = "Order Channel"
+        verbose_name_plural = "Order Channels"
+
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders")
-    type = models.CharField(max_length=100, choices=ORDER_TYPE_CHOICES)
+    # type = models.CharField(max_length=100, choices=ORDER_TYPE_CHOICES)
+    order_channel = models.ForeignKey(
+        OrderChannel,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="orders",
+        help_text="The channel through which the order was placed (e.g., Foodpanda, Dine In)"
+    ) # Add ForeignKey to OrderChannel
     final_amount = models.DecimalField(max_digits=14, decimal_places=8, default=0) #order amount 
     amount = models.DecimalField(max_digits=14, decimal_places=8) # paid amount
     due = models.DecimalField(max_digits=14, decimal_places=8 , null=True, blank=True, default=0)
@@ -224,7 +262,7 @@ class Order(models.Model):
     
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL,null=True ,blank=True, related_name='orders')
     discount_applied = models.DecimalField(max_digits=14, decimal_places=8 , null=True ,blank=True)
-    
+    void_reason = models.TextField(null=True, blank=True, help_text="Reason for voiding the order")
     status = models.CharField(max_length=100, choices=ORDER_STATUS_CHOICES)
     outlet = models.ForeignKey(Outlet, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders")
     order_id = models.CharField(max_length=100, unique=True, blank=True, null=True)
@@ -279,7 +317,8 @@ class OrderProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True, related_name='items') 
     discount = models.DecimalField(max_digits=14, decimal_places=8, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)    
+    updated_at = models.DateTimeField(auto_now=True)  
+    kitchenOrder = models.ForeignKey(KitchenOrder, on_delete=models.CASCADE, null=True, blank=True, related_name="orders")
     def __str__(self):
         return f"{self.id}"
 
@@ -301,13 +340,54 @@ class OrderIngredients(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+# New: Define choices for the type of Payment Method
+class PAYMENT_METHOD_TYPE_CHOICES(models.TextChoices):
+    CASH = 'CASH', 'Cash'
+    CARD = 'CARD', 'Card'
+    MOBILE_BANKING = 'MOBILE_BANKING', 'Mobile Banking' # e.g., Bkash, Rocket, Nagad
+    BANK_TRANSFER = 'BANK_TRANSFER', 'Bank Transfer'
+    OTHER = 'OTHER', 'Other'
+
+# New: PaymentMethod Model
+class PaymentMethod(models.Model):
+    name = models.CharField(max_length=100, unique=True, help_text="e.g., Bkash, Rocket, Nagad, Credit Card, Cash")
+    type = models.CharField(
+        max_length=50,
+        choices=PAYMENT_METHOD_TYPE_CHOICES.choices,
+        default=PAYMENT_METHOD_TYPE_CHOICES.CASH,
+    )
+    service_charge_rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0.00,
+        help_text="Service charge rate in percentage (e.g., 1.85 for 1.85%)"
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.type})"
+
+    class Meta:
+        verbose_name = "Payment Method"
+        verbose_name_plural = "Payment Methods"
+
 class Payment(models.Model):
     supplier  = models.ForeignKey("inventory.Supplier",on_delete=models.SET_NULL, related_name='payments', null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, related_name='payments', null=True, blank=True)
     amount = models.DecimalField(max_digits=14, decimal_places=8)
-    payment_method = models.CharField(
-        max_length=100, 
-        choices=PAYMENT_METHOD_CHOICES
+    # payment_method = models.CharField(
+    #     max_length=100, 
+    #     choices=PAYMENT_METHOD_CHOICES
+    # )
+    payment_method = models.ForeignKey(
+        PaymentMethod,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='payments',
+        help_text="The method used for this payment"
+        
     )
     status = models.CharField(
         max_length=100, 

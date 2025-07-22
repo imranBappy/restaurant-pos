@@ -1,11 +1,25 @@
 from graphene_django.types import DjangoObjectType
 import graphene
-from .models import OrderIngredients, Ingredient, TableBooking, Product, Category, Order, OrderProduct,Floor, FloorTable, ExtraFood, Payment
-from .filters import OrderIngredientsFilter, IngredientFilter, TableBookingFilter, ProductFilter, CategoryFilter, OrderFilter, OrderProductFilter ,FloorFilter, FloorTableFilter,  PaymentFilter
+from .models import OrderChannel, PaymentMethod, OrderIngredients, Ingredient, TableBooking, Product, Category, Order, OrderProduct,Floor, FloorTable, ExtraFood, Payment
+from .filters import OrderChannelFilter, PaymentMethodFilter, OrderIngredientsFilter, IngredientFilter, TableBookingFilter, ProductFilter, CategoryFilter, OrderFilter, OrderProductFilter ,FloorFilter, FloorTableFilter,  PaymentFilter
 from backend.count_connection import CountConnection
 from apps.accounts.objectType import UserType
 
+class OrderChannelType(DjangoObjectType):
+    id = graphene.ID(required=True)
+    class Meta:
+        model = OrderChannel
+        filterset_class = OrderChannelFilter
+        interfaces = (graphene.relay.Node,)
+        connection_class = CountConnection
 
+class PaymentMethodType(DjangoObjectType):
+    id = graphene.ID(required=True)
+    class Meta:
+        model = PaymentMethod
+        filterset_class = PaymentMethodFilter
+        interfaces = (graphene.relay.Node,)
+        connection_class = CountConnection
 class OrderIngredientsType(DjangoObjectType):
     id = graphene.ID(required=True)
     class Meta:

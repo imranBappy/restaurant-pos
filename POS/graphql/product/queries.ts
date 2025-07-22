@@ -574,7 +574,7 @@ query MyQuery($id: ID, $order: ID) {
   
   `
 export const PAYMENTS_QUERY = gql`
-query MyQuery($order: ID, $amount: Decimal, $trxId: String, $first: Int, $createdAt: DateTime, $orderBy: String, $status: ProductPaymentStatusChoices, $paymentMethod: ProductPaymentPaymentMethodChoices, $offset: Int, $search: String = "") {
+query MyQuery($order: ID, $amount: Decimal, $trxId: String, $first: Int, $createdAt: DateTime, $orderBy: String, $status: ProductPaymentStatusChoices, $offset: Int, $search: String = "", $paymentMethod: ID) {
   payments(
     order: $order
     amount: $amount
@@ -583,9 +583,9 @@ query MyQuery($order: ID, $amount: Decimal, $trxId: String, $first: Int, $create
     createdAt: $createdAt
     orderBy: $orderBy
     status: $status
-    paymentMethod: $paymentMethod
     offset: $offset
     search: $search
+    paymentMethod: $paymentMethod
   ) {
     totalCount
     edges {
@@ -593,7 +593,9 @@ query MyQuery($order: ID, $amount: Decimal, $trxId: String, $first: Int, $create
         amount
         createdAt
         id
-        paymentMethod
+        paymentMethod {
+          id
+        }
         remarks
         status
         trxId

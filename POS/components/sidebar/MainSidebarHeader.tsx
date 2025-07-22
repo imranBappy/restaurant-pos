@@ -28,7 +28,7 @@ import Link from "next/link"
 
 const MainSidebarHeader = () => {
     const outlets = useStore((store) => store.outlets)
-    const selectOutlet = useStore((store) => store.selectOutlet)
+    // const selectOutlet = useStore((store) => store.selectOutlet)
     const activeOutlet = outlets[0]
     const role = useStore((store) => store.role)
 
@@ -36,11 +36,10 @@ const MainSidebarHeader = () => {
     return (
         <SidebarHeader>
             <SidebarMenu>
-                <SidebarMenuItem>
+                <SidebarMenuItem >
                     <DropdownMenu >
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild >
                             <SidebarMenuButton
-
                                 size="lg"
                                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
@@ -77,8 +76,9 @@ const MainSidebarHeader = () => {
                             </DropdownMenuLabel>
                             {outlets.map((item, index) => (
                                 <DropdownMenuItem
+                                    disabled
                                     key={`${item?.id}-${index}`}
-                                    onClick={() => selectOutlet(item.id)}
+                                    // onClick={() => selectOutlet(item.id)}
                                     className="gap-2 p-2"
                                 >
                                     <div className="flex size-6 items-center justify-center rounded-sm border">
@@ -97,8 +97,11 @@ const MainSidebarHeader = () => {
                                 </DropdownMenuItem>
                             ))}
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem disabled={role !== ADMIN} >
-                                <Link className="flex gap-2 p-1" href={`/outlets/add`}>
+                            <DropdownMenuItem
+                                className="hidden"
+                                // this has been disable for new 
+                                disabled={role !== ADMIN} >
+                                <Link className="  flex gap-2 p-1" href={`/outlets/add`}>
                                     <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                                         <Plus className="size-4" />
                                     </div>

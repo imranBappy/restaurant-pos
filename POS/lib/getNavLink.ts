@@ -3,8 +3,13 @@ import {
     Bot,
     SquareTerminal,
     Users,
-    Store
+    Store,
+
 } from "lucide-react"
+import { HandCoins } from 'lucide-react';
+import { Armchair } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
+import { FaUtensils } from "react-icons/fa";
 
 interface NavItem {
     title: string
@@ -75,17 +80,21 @@ export const navbarLinks: NavLinks = {
             ],
         },
         {
-            title: 'Order & POS',
+            title: 'Order',
             url: '#',
-            icon: SquareTerminal,
+            icon: ShoppingCart,
             items: [
+                {
+                    title: 'Report',
+                    url: '/order-report',
+                },
+                {
+                    title: 'Order Channel',
+                    url: '/orders/channel',
+                },
                 {
                     title: 'Order list',
                     url: '/orders',
-                },
-                {
-                    title: 'Payment list',
-                    url: '/orders/payments',
                 },
                 {
                     title: 'POS',
@@ -94,9 +103,36 @@ export const navbarLinks: NavLinks = {
             ],
         },
         {
+            title: 'Payment',
+            url: '/payments',
+            icon: HandCoins,
+            items: [
+                {
+                    title: 'Payment list',
+                    url: '/payments/list',
+                },
+                {
+                    title: 'Payment Method',
+                    url: '/payments/method',
+                },
+            ],
+        },
+        {
+            title: 'Kitchen',
+            url: '#',
+            icon: FaUtensils,
+            items: [
+                {
+                    title: 'KOT List',
+                    url: 'kot',
+                },
+
+            ],
+        },
+        {
             title: 'Floor & Table',
             url: '#',
-            icon: SquareTerminal,
+            icon: Armchair,
             items: [
                 {
                     title: 'Table View',

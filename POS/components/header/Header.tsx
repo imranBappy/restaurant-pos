@@ -4,16 +4,20 @@ import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '@radix-ui/react-separator';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '../ui/breadcrumb';
 import { Button } from '../ui/button';
-import { Moon, Sun, ShoppingBasket } from 'lucide-react';
+import { Moon, Sun, ShoppingBasket, Table } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { usePathname } from 'next/navigation'
 import Link from 'next/link';
+import { Badge } from "@/components/ui/badge"
+
+
 
 function ThemeToggle() {
     const { setTheme, theme } = useTheme()
     return (
         <Button
-            variant="ghost"
+            title='Color Theme  '
+            variant="secondary"
             size="icon"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             className="h-9 w-9"
@@ -49,11 +53,23 @@ const Header = () => {
                 </Breadcrumb>
             </div>
             <div className=' flex gap-2'>
-                <Link href={`/orders/pos`}>
-                    <Button size={'icon'} variant={'ghost'}>
-                        <ShoppingBasket />
+                <Link href={`/space`}>
+                    <Button size={'icon'} variant={'secondary'} title='Table'>
+                        <Table />
                     </Button>
                 </Link>
+                <Link href={`/orders/pos`}>
+                    <Button size={'icon'} variant={'secondary'} className=' relative' title='POS'>
+                        <ShoppingBasket />
+                        <Badge
+                            className="h-5 -top-3 -right-2 absolute min-w-5 rounded-full px-1 items-center justify-center  font-mono tabular-nums text-green-700 ring-1 dark:text-green-300"
+                            variant="outline"
+                        >
+                            20
+                        </Badge>
+                    </Button>
+                </Link>
+
                 <ThemeToggle />
             </div>
         </header>

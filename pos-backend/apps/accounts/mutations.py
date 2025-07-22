@@ -236,10 +236,9 @@ class RegisterClient(DjangoFormMutation):
                     user_roles_list = [role[0] for role in UserRole.choices]
                     for role in user_roles_list:
                         Group.objects.get_or_create(name=role)
-                
                     
                     # create outlet
-                    outlet = Outlet.objects.create(name=tenant.name, phone='123456789', email=email, address='Admin Address')
+                    outlet = Outlet.objects.create(name=tenant.name, phone='+88015000000000', email=email, address='Dhaka, Bangladesh')
                         
                     admin_user = User.objects.create_superuser(email=email, password=password, outlet=outlet)
                     

@@ -7,9 +7,10 @@ interface PropsType {
     onChange: (value: string) => void;
     children: ReactNode,
     valueState: [string, React.Dispatch<React.SetStateAction<string>>]
+    placeholder?: string
 }
 
-const SearchableFiled = ({ onChange, children, valueState }: PropsType) => {
+const SearchableFiled = ({ onChange, children, valueState, placeholder = "Search..." }: PropsType) => {
     const [value, setValue] = valueState
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetSearch = useCallback(
@@ -17,14 +18,14 @@ const SearchableFiled = ({ onChange, children, valueState }: PropsType) => {
         [],
     )
     return (
-        <div className="max-w-80 relative ">
+        <div className="max-w-80 relative flex-grow ">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
                 autoComplete="off"
                 type="search" value={value} className=" max-w-80  pl-8" onChange={(e) => {
                     debouncedSetSearch(e.target.value)
                     setValue(e.target.value)
-                }} name="search" placeholder="Search..." />
+                }} name="search" placeholder={placeholder} />
             {children}
         </div>
     );

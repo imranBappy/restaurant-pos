@@ -31,7 +31,7 @@ export default function Header() {
                     >
                         Pricing
                     </Link>
-                    <Link href="/sign-in">
+                    <Link href="/login">
                         <Button variant="outline">Login</Button>
                     </Link>
                     <Link href="/signup">

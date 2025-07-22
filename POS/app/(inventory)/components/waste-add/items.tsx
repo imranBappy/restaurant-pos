@@ -3,7 +3,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useQuery } from "@apollo/client";
 import { FilterState } from "@/app/product/components";
 import { toast } from "@/hooks/use-toast";
-import ProductSkeleton from "@/app/orders/components/pos/product-skeleton";
+import ProductSkeleton from "@/app/(order)/components/pos/product-skeleton";
 import { ITEMS_QUERY } from "@/graphql/item/queries";
 import ItemCard from "./item-card";
 import { ITEM_TYPE } from "@/graphql/item/types";
@@ -22,10 +22,10 @@ const Items = ({ filters }: POSCategoriesProps) => {
 
   const handleAddToCart = (item: ITEM_TYPE) => {
     if (!selectedItems.get(item.id) && selectedItems.size) {
-        toast({
-            description: 'You can maximum one item.',
-            variant:"destructive"
-        });
+      toast({
+        description: 'You can maximum one item.',
+        variant: "destructive"
+      });
       return
     }
     const quantity = selectedItems.get(item.id)?.quantity || 0;
@@ -88,8 +88,8 @@ const Items = ({ filters }: POSCategoriesProps) => {
     }
   };
 
- 
-  
+
+
 
   const LoadingSkeleton = () => (
     <div className="w-full flex flex-wrap gap-4 p-4">

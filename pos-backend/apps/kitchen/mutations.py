@@ -5,6 +5,7 @@ from apps.outlet.models import Outlet
 from .objectType import KitchenType
 from apps.base.utils import get_object_by_kwargs
 from backend.authentication import isAuthenticated
+from .services import upsert_kitchen_order
 class CreateKitchen(graphene.Mutation):
     message = graphene.String()
     success = graphene.Boolean()
@@ -21,8 +22,6 @@ class CreateKitchen(graphene.Mutation):
         new_kitchen = Kitchen(name=name, photo=photo, description=description, outlet=find_outlet)
         new_kitchen.save()
         return CreateKitchen(success = True,kitchen=new_kitchen, message="Success")
-
-
 
 class UpdateKitchen(graphene.Mutation):
 
@@ -60,6 +59,19 @@ class DeleteKitchen(graphene.Mutation):
         return DeleteKitchen(success=True)
 
 
+class KitchenOrderMutation(graphene.Mutation):
+    class Arguments:
+        order_id = graphene.ID(required=True)
+    success = graphene.Boolean()
+    message = graphene.String()
+    @isAuthenticated(['Manager', 'Admin'])
+    def mutate(self, info, order_id):
+        upsert_kitchen_order(order_id)
+        return KitchenOrderMutation(success=True, message="Success")
+    
+
 class Mutation(graphene.ObjectType):
     create_Kitchen = CreateKitchen.Field()
     update_Kitchen = UpdateKitchen.Field()
+    delete_Kitchen = DeleteKitchen.Field()
+    upsert_kitchen_order = KitchenOrderMutation.Field() 

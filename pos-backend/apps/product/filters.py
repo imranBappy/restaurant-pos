@@ -1,9 +1,20 @@
-from apps.product.models import OrderIngredients, Ingredient, TableBooking, Product, Category, Order, OrderProduct,  ExtraFood, Floor, FloorTable, Payment
+from apps.product.models import OrderChannel, PaymentMethod, OrderIngredients, Ingredient, TableBooking, Product, Category, Order, OrderProduct,  ExtraFood, Floor, FloorTable, Payment
 import django_filters as filters
 from apps.base.filters import BaseFilterOrderBy
 from django.db.models import Q
 from datetime import timedelta
 
+
+class OrderChannelFilter(BaseFilterOrderBy):
+    class Meta:
+        model = OrderChannel
+        fields = '__all__'
+
+
+class PaymentMethodFilter(BaseFilterOrderBy):
+    class Meta:
+        model = PaymentMethod
+        fields = '__all__'
 
 
 class OrderIngredientsFilter(BaseFilterOrderBy):

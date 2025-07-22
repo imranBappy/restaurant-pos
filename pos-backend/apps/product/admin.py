@@ -1,8 +1,16 @@
 from django.contrib import admin
-
 # Register your models here.
-from apps.product.models import OrderIngredients, Ingredient, Category,Payment, TableBooking, Product, Order, OrderProduct, ExtraFood, Floor, FloorTable
+from apps.product.models import PaymentMethod, OrderChannel, OrderIngredients, Ingredient, Category,Payment, TableBooking, Product, Order, OrderProduct, ExtraFood, Floor, FloorTable
 
+
+
+@admin.register(PaymentMethod)
+class OrderChannelAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'type', 'service_charge_rate','is_active')
+
+@admin.register(OrderChannel)
+class OrderChannelAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'commission_rate', 'is_active')
 
 @admin.register(OrderIngredients)
 class OrderIngredientsAdmin(admin.ModelAdmin):
