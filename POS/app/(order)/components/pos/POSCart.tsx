@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card';
 import CardItem from './card-item';
 import { toast } from '@/hooks/use-toast';
 import Button from '@/components/button';
-import {  LampFloor, } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DiscountModel from './DiscountModel';
 
@@ -16,9 +15,12 @@ import CustomerSearch from '@/components/CustomerSearch';
 import { USER_TYPE } from '@/graphql/accounts';
 import PaymentModal from '@/app/(payment)/components/order-payment/payment-modal';
 import { calculateDiscount } from './pos';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { FLOOR_TABLES_TYPE, ORDER_MUTATION_V2, ORDERS_QUERY } from '@/graphql/product';
 import Sheet from '@/components/Sheet/Sheet';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ORDER_CHANNEL_TYPE, ORDER_CHANNELS_QUERY } from '@/graphql/order';
+import { OPTION_TYPE } from '@/components/input';
 const calculatePrice = (cart: CARD_TYPE[]) => {
     const result = cart?.reduce((total, item) => {
         if (item.discount > 0) {
@@ -65,6 +67,23 @@ const POSCart = () => {
     const searchParams = useSearchParams();
     const [selectedUser, setSelectedUser] = useState<USER_TYPE>();
     const clearTable = useStore((store) => store.clearTable);
+    const [orderChannel, setOrderChannel] = useState("1")
+
+    const { loading, data: res, } = useQuery(ORDER_CHANNELS_QUERY, {
+        onError: (error) => {
+            toast({
+                title: "Error",
+                description: error.message,
+                variant: "destructive",
+            })
+        }
+    }
+    );
+    const orderChannels: OPTION_TYPE[] = res?.orderChannels?.edges?.map(({ node }: { node: ORDER_CHANNEL_TYPE }) => ({
+        value: node.id,
+        label: node.name,
+    })) || [];
+
 
     const [createOrder, { loading: createOrderLoading }] = useMutation(
         ORDER_MUTATION_V2,
@@ -99,8 +118,6 @@ const POSCart = () => {
                 return;
             }
 
-            console.log(tableState);
-            // return;
 
             const amount = calculatePrice(cart).toFixed(2);
 
@@ -163,6 +180,9 @@ const POSCart = () => {
     const handleSelectUser = (newSelectedUser: USER_TYPE) => {
         setSelectedUser(newSelectedUser);
     };
+    if (loading) {
+        return <></>
+    }
     return (
         <Card
             className="w-[350px] 
@@ -181,27 +201,30 @@ const POSCart = () => {
             </div>
             <div className="p-4 border-b ">
                 {/* Table */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-between">
                     <div className="flex justify-between w-full ">
-                        <h5 className="flex items-center gap-2  ">
-                            {' '}
-                            <span>Table :</span>{' '}
-                            <span className="flex items-center">
-                                <LampFloor className=" h-4 w-4 text-muted-foreground" />{' '}
-                                {tableState?.length}
-                            </span>
-                        </h5>
 
                         <Sheet />
-                        {/* <Link href={`/floor/tables-view`}>
-                                <Button
-                                    className=" rounded-sm"
-                                    size="sm"
-                                    variant="secondary"
-                                >
-                                    <Plus />
-                                </Button>
-                            </Link> */}
+
+                    </div>
+                    {/* divider */}
+                    <div className='w-full flex justify-end border-r  '>
+                        <Select value={orderChannel} onValueChange={setOrderChannel}>
+                            <SelectTrigger className="w-[200px] ">
+                                <SelectValue placeholder="Select order type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    {
+                                        orderChannels.map(item => <SelectItem key={item.value} value={item.value}>
+                                            {item.label}
+                                        </SelectItem>
+                                        )
+                                    }
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
                     </div>
                 </div>
             </div>

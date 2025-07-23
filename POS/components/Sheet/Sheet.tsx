@@ -6,11 +6,15 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import { ChevronRight } from "lucide-react";
+import useStore from "@/stores";
 import { useState } from "react";
+import { Button } from "../ui/button";
+import { MdTableBar } from "react-icons/md";
 
 const Sheet = () => {
     const [open, setOpen] = useState(false)
+    const tableState = useStore((store) => store.table);
+
     const handleToggleSheet = () => {
         setOpen(!open)
     }
@@ -22,7 +26,10 @@ const Sheet = () => {
             <SheetTrigger
                 onClick={handleToggleSheet}
             >
-                <ChevronRight  />
+                <Button variant={'secondary'}>
+                    <MdTableBar />
+                    {tableState?.length}
+                </Button>
             </SheetTrigger>
             <SheetContent style={{ maxWidth: "80%" }}>
                 <SheetHeader>

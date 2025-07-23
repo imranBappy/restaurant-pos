@@ -11,7 +11,7 @@ import { useQuery } from "@apollo/client"
 import { DataTableContent, DataTablePagination } from "@/components/data-table"
 import { columns, TableFilters, FilterState } from './index'
 import { useToast } from "@/hooks/use-toast"
-import { PAYMENT_METHOD_TYPE, PAYMENT_METHODS_QUERY } from "@/graphql/payment"
+
 import { ORDER_CHANNEL_TYPE, ORDER_CHANNELS_QUERY } from "@/graphql/order"
 
 export const OrderChannelTable = () => {

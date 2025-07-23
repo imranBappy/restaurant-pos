@@ -6,33 +6,59 @@ interface PROPS_TYPE {
     name: string;
     price: number;
     quantity: number;
-    onPlusItem?: () => void
-    discount?: number
-    onMinusItem: () => void
+    onPlusItem?: () => void;
+    onMinusItem: () => void;
+    discount?: number;
 }
 
 const CardItem = ({ name, price, quantity, discount = 0, onPlusItem, onMinusItem }: PROPS_TYPE) => {
+    const finalPrice = price - discount;
+
     return (
-        <div className="flex justify-between items-center gap-1" >
-            <div>
-                <Link href='#' className=" block font-medium line-clamp-1">{name} </Link>
-                {
-                    discount ? <div className='flex gap-2 items-center'>
-                        <p className="text-sm text-muted-foreground ">{quantity} x {<span className='line-through'>${(price).toFixed(2)}</span>}</p>
-                        <span>|</span>
-                        <p className="text-sm  dark:text-gray-300  text-gray-500 ">{quantity} x ${(price - discount).toFixed(2)}</p>
-                    </div> : <p className="text-sm   dark:text-gray-300 text-gray-500">{quantity} x ${(price - discount).toFixed(2)}</p>
-                }
-            </div>
-            <div className='flex'>
-                <div className='flex flex-col gap-[2px]'>
-                    <Button onClick={onMinusItem} variant="destructive" className='hover:bg-red-500  rounded-none  h-5 hover:text-white' size="sm">
-                        <Minus />
-                    </Button>
-                    <Button onClick={onPlusItem} variant="secondary" className='  hover:bg-green-700  rounded-none h-5 hover:text-white' size="sm">
-                        <Plus />
-                    </Button>
+        <div className="flex items-center justify-between p-2 border rounded-md shadow-sm bg-card text-card-foreground hover:bg-card/90 transition-colors duration-200 ease-in-out text-sm">
+            <div className="flex-1 min-w-0">
+                {/* Product Name */}
+                <Link href='#' className="block text-base font-semibold truncate text-primary hover:underline">
+                    {name}
+                </Link>
+                {/* Price and Quantity Display */}
+                <div className="flex items-baseline gap-1 mt-0.5">
+                    {discount > 0 && (
+                        <p className="text-xs line-through text-muted-foreground">
+                            ${price.toFixed(2)}
+                        </p>
+                    )}
+                    <p className="text-sm font-bold text-accent-foreground">
+                        ${finalPrice.toFixed(2)}
+                    </p>
+                    <span className="text-xs text-muted-foreground">
+                        x {quantity}
+                    </span>
                 </div>
+            </div>
+            {/* Quantity Adjustment Controls */}
+            <div className="flex items-center space-x-1 ml-2">
+                <Button
+                    onClick={onMinusItem}
+                    variant="outline"
+                    size="icon"
+                    className="h-7 w-7 rounded-full border-destructive text-destructive hover:bg-destructive hover:text-white transition-colors"
+                    aria-label="Decrease quantity"
+                >
+                    <Minus className="h-3 w-3" />
+                </Button>
+                <span className="text-base font-semibold w-6 text-center">
+                    {quantity}
+                </span>
+                <Button
+                    onClick={onPlusItem}
+                    variant="outline"
+                    size="icon"
+                    className="h-7 w-7 rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                    aria-label="Increase quantity"
+                >
+                    <Plus className="h-3 w-3" />
+                </Button>
             </div>
         </div>
     );
