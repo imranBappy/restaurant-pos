@@ -49,7 +49,7 @@ const CustomerSearch = () => {
     ))
 
     const elementContainer = <div className="absolute shadow dark:bg-black top-10 bg-white">
-        <ScrollArea className="h-72 w-80 z-50 rounded-md   border ">
+        <ScrollArea className="h-72 w-80 z-50 rounded-md   border   ">
             <div className="p-4">
                 <h4 className="mb-4 text-sm font-medium leading-none">Search result</h4>
                 {resultsElements}

@@ -1,5 +1,4 @@
 "use client"
-import { useRouter } from "next/navigation"
 import {
   CardContent,
   CardDescription,
@@ -11,7 +10,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Form } from "@/components/ui/form"
 import { useMutation } from '@apollo/client';
-import { USER_REGISTER } from "@/graphql/accounts"
+import { USER_REGISTER, } from "@/graphql/accounts"
 import { useToast } from "@/hooks/use-toast"
 import { TextField } from "@/components/input"
 import PasswordField from "@/components/input/password-field"
@@ -35,7 +34,9 @@ const formSchema = z.object({
 })
 
 
-function UserAddForm() {
+function UserAddForm({ className = "grid grid-cols-1 md:grid-cols-2 gap-6", onCreatedUser = (_: { email: string; password: string; name: string; phone: string; id: string }) => {
+  console.log(_);
+ } }) {
   const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,14 +46,19 @@ function UserAddForm() {
     },
   })
 
-  const router = useRouter()
+  // const router = useRouter()
   const [registerUser, { loading }] = useMutation(USER_REGISTER, {
     onCompleted: async (res) => {
       toast({
         variant: 'default',
         description: res.message,
       })
-      router.push('/users')
+      // router.push('/users')
+
+      onCreatedUser({
+        id: res?.registerUser?.id,
+        ...form.getValues()
+      })
     },
     onError: (err) => {
       console.log(err);
@@ -82,7 +88,7 @@ function UserAddForm() {
     await registerUser({
       variables: {
         name: data.name,
-        email: data.email,
+        email: data.email?.toLocaleLowerCase(),
         phone: data.phone,
         password: data.password,
       },
@@ -100,7 +106,7 @@ function UserAddForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className=" flex flex-col gap-5" >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className={className}>
               <TextField
                 form={form}
                 name="name"

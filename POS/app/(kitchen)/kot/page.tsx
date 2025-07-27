@@ -1,175 +1,147 @@
 "use client";
 import React, { useState } from "react";
 // Import your GraphQL hooks or Apollo client here
-import { FaUser, FaUtensils, FaClock, FaStickyNote } from "react-icons/fa";
-import { format } from "date-fns";
+import { Input, } from "@/components/ui";
+import { useQuery } from "@apollo/client";
+import { KITCHEN_ORDER_QUERY, KITCHEN_ORDER_TYPE, KOT_STATUS_TYPES } from "@/graphql/kitchen";
+import KOTCard, { statusColorVariants } from "../components/KOTCard";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import InfiniteScroll from "react-infinite-scroll-component";
+import ProductSkeleton from "@/app/(order)/components/pos/product-skeleton";
 
 const KOTPage = () => {
-    // State for filters
-    const [kitchen, setKitchen] = useState("");
+    const [pagination] = useState({
+        pageIndex: 0,
+        pageSize: 30,
+    })
     const [orderId, setOrderId] = useState("");
-    const [customer, setCustomer] = useState("");
-
-    // Fetch KOTs using filters (replace with your actual data fetching logic)
-    // const { data, loading, error } = useKitchenOrdersQuery({ variables: { kitchen, orderId, customer } });
-
-    // Dummy data for illustration
-    const kotList = [
+    const [status, setStatus] = useState("PENDING")
+    const getStatusStyles = (status: string) => statusColorVariants[status] || statusColorVariants.DEFAULT;
+    const { data, loading, fetchMore } = useQuery(KITCHEN_ORDER_QUERY,
         {
-            id: "1",
-            status: "PENDING",
-            notes: "No onions",
-            completionTime: "2024-07-16T16:00:00Z",
-            kitchen: { id: "1", name: "Main Kitchen" },
-            order: {
-                id: "101",
-                customer: { id: "c1", name: "John Doe", phone: "1234567890" },
-                orderProducts: [
-                    { id: "op1", product: { id: "p1", name: "Pizza" }, quantity: 2 },
-                    { id: "op2", product: { id: "p2", name: "Pasta" }, quantity: 1 },
-                ],
-            },
-        },
-        {
-            id: "2",
-            status: "READY",
-            notes: "Extra sauce",
-            completionTime: "2024-07-16T17:30:00Z",
-            kitchen: { id: "2", name: "Dessert Kitchen" },
-            order: {
-                id: "102",
-                customer: { id: "c2", name: "Jane Smith", phone: "9876543210" },
-                orderProducts: [
-                    { id: "op3", product: { id: "p3", name: "Ice Cream" }, quantity: 1 },
-                    { id: "op4", product: { id: "p4", name: "Cake" }, quantity: 1 },
-                ],
-            },
-        },
-        {
-            id: "3",
-            status: "COMPLETED",
-            notes: "No changes",
-            completionTime: "2024-07-16T18:00:00Z",
-            kitchen: { id: "1", name: "Main Kitchen" },
-            order: {
-                id: "103",
-                customer: { id: "c3", name: "Peter Jones", phone: "1122334455" },
-                orderProducts: [
-                    { id: "op5", product: { id: "p5", name: "Burger" }, quantity: 1 },
-                    { id: "op6", product: { id: "p6", name: "Fries" }, quantity: 1 },
-                ],
-            },
-        },
-    ];
+            variables: {
+                offset: 0,
+                first: pagination.pageSize,
+                orderBy: '-createdAt',
+                ...(orderId ? { order: orderId } : {}),
+                ...(status !== 'ALL' && status ? { status: status } : {})
+            }
+        }
+    )
+    const kitchenOrders = data?.kitchenOrders?.edges || []
+    console.log({ kitchenOrders });
 
+    const fetchMoreKitchenOrders = async () => {
+        try {
+            const currentLength = kitchenOrders?.length;
+            await fetchMore({
+                variables: {
+                    offset: currentLength,
+                    first: pagination.pageSize,
+                },
+                updateQuery: (prev, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev;
+                    return {
+                        kitchenOrders: {
+                            __typename: prev.kitchenOrders.__typename,
+                            totalCount: fetchMoreResult.kitchenOrders.totalCount,
+                            edges: [...prev.kitchenOrders.edges, ...fetchMoreResult.kitchenOrders.edges],
+                            pageInfo: fetchMoreResult.kitchenOrders.pageInfo
+                        }
+                    };
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching more products:', error);
+
+        }
+    };
+    // if (loading) return <Loading />
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">Kitchen Order Tickets (KOT)</h1>
             {/* Filters */}
-            <div className="flex flex-wrap gap-4 mb-6">
-                <select
-                    className="border rounded px-3 py-2"
-                    value={kitchen}
-                    onChange={e => setKitchen(e.target.value)}
-                >
-                    <option value="">All Kitchens</option>
-                    <option value="1">Main Kitchen</option>
-                    {/* Map your kitchens here */}
-                </select>
-                <input
-                    className="border rounded px-3 py-2"
+            <div className="flex flex-row md:flex-nowrap flex-wrap gap-4 mb-6">
+                <Input
+
+                    className="border rounded px-3 py-2 max-w-80"
                     placeholder="Order ID"
                     value={orderId}
                     onChange={e => setOrderId(e.target.value)}
                 />
-                <input
-                    className="border rounded px-3 py-2"
-                    placeholder="Customer"
-                    value={customer}
-                    onChange={e => setCustomer(e.target.value)}
-                />
-                {/* Add more filters as needed */}
-            </div>
 
-            {/* KOT Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {kotList.map(kot => (
-                    <div
-                        key={kot.id}
-                        className={`
-                            relative rounded-xl shadow-md border-l-4 p-5 mb-4
-                            transition-all duration-200
-                            hover:shadow-xl hover:border-opacity-80 hover:bg-opacity-90
-                            ${kot.status === "PENDING"
-                                ? "bg-yellow-50 dark:bg-yellow-900/30 border-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-800/40"
-                                : kot.status === "READY"
-                                    ? "bg-green-50 dark:bg-green-900/30 border-green-500 hover:bg-green-100 dark:hover:bg-green-800/40"
-                                    : kot.status === "COMPLETED"
-                                        ? "bg-blue-50 dark:bg-blue-900/30 border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-800/40"
-                                        : "bg-gray-50 dark:bg-gray-800 border-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/60"
-                            }
-                        `}
-                    >
-                        {/* Status badge and time */}
-                        <div className="flex justify-between items-center mb-2">
-                            <span className={`
-                                px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
-                                ${kot.status === "PENDING"
-                                    ? "bg-yellow-200 text-yellow-900 dark:bg-yellow-800 dark:text-yellow-100"
-                                    : kot.status === "READY"
-                                        ? "bg-green-200 text-green-900 dark:bg-green-800 dark:text-green-100"
-                                        : kot.status === "COMPLETED"
-                                            ? "bg-blue-200 text-blue-900 dark:bg-blue-800 dark:text-blue-100"
-                                            : "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100"}
-                            `}>
-                                {kot.status}
-                            </span>
-                            <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-200">
-                                <FaClock className="inline-block" />
-                                {format(new Date(kot.completionTime), "HH:mm, dd MMM yyyy")}
-                            </span>
-                        </div>
-                        {/* Order/Kitchen/Customer */}
-                        <div className="mb-2 flex flex-col gap-1">
-                            <div className="flex items-center gap-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
-                                <FaUtensils className="text-blue-500" />
-                                {kot.kitchen.name}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                                <FaUser className="text-green-500" />
-                                {kot.order.customer.name} <span className="text-gray-400">({kot.order.customer.phone})</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm">
-                                <span className="font-medium text-indigo-700 dark:text-indigo-300">Order #</span>
-                                <span className="font-bold text-indigo-900 dark:text-indigo-100">{kot.order.id}</span>
-                            </div>
-                            {kot.notes && (
-                                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                                    <FaStickyNote className="text-yellow-500" />
-                                    {kot.notes}
-                                </div>
-                            )}
-                        </div>
-                        {/* Order Items */}
-                        <div className="mt-3">
-                            <div className="font-semibold mb-1 text-sm text-gray-700 dark:text-gray-200">Order Items:</div>
-                            <div className="flex flex-wrap gap-2">
-                                {kot.order.orderProducts.map(item => (
-                                    <span
-                                        key={item.id}
-                                        className="bg-white/80 dark:bg-gray-700/80 rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1 border border-gray-200 dark:border-gray-600"
-                                    >
-                                        <span className="text-gray-800 dark:text-gray-100">{item.product.name}</span>
-                                        <span className="bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full px-2 ml-2 font-bold">
-                                            x{item.quantity}
-                                        </span>
+                <Select value={status} onValueChange={setStatus}>
+                    <SelectTrigger className="border rounded px-3 py-2 max-w-80">
+                        <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+
+                        <SelectGroup>
+                            <SelectItem value={"ALL"}>
+                                ALL
+                            </SelectItem>
+                            {
+
+                                KOT_STATUS_TYPES.map((item) => <SelectItem key={item.value} value={item.value}>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+                                                                        ${getStatusStyles(item.value).bg} ${getStatusStyles(item.value).text}
+                                                                        `}>
+                                        {item.label}
                                     </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                                </SelectItem>)
+                            }
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+
             </div>
+            <div
+                className='h-[calc(100vh-209px)]'
+                id="scrollableDiv"
+                style={{
+                    overflow: 'auto',
+                    display: 'flex',
+                    scrollSnapType: 'x mandatory',
+                    scrollBehavior: 'smooth',
+                    cursor: 'grab',
+                }}
+            >
+                {
+                    kitchenOrders.length === 0 ? (
+                        <div className="w-full flex justify-center items-center h-[calc(100vh-225px)]">
+                            <p className=" text-muted-foreground font-medium text-lg">
+                                No KOT found
+                            </p>
+                        </div>
+                    ) : (
+                        <InfiniteScroll
+                            dataLength={kitchenOrders.length}
+                            next={fetchMoreKitchenOrders}
+                            hasMore={
+                                !loading &&
+                                (data?.kitchenOrders?.totalCount || 0) >
+                                (kitchenOrders?.length || 0)
+                            }
+                            loader={Array(8).fill(0).map((_, index) => (
+                                <ProductSkeleton key={index} />
+                            ))}
+                            className='flex flex-wrap gap-4 w-full'
+                            scrollableTarget="scrollableDiv"
+
+                        >
+                            {loading && !data ? (
+                                <ProductSkeleton />
+                            ) : (
+                                data?.kitchenOrders?.edges?.map(({ node }: { node: KITCHEN_ORDER_TYPE }) => <KOTCard key={node.id} kot={node} />)
+                            )}
+                        </InfiniteScroll>
+                    )
+                }
+            </div>
+            {/* KOT Cards */}
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data?.kitchenOrders?.edges?.map(({ node }) => <KOTCard key={node.id} kot={node} />)}
+            </div> */}
         </div>
     );
 };

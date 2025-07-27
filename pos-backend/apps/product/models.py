@@ -2,18 +2,14 @@ from django.db import models
 from apps.accounts.models import User
 from apps.outlet.models import Outlet
 from apps.kitchen.models import Kitchen, KitchenOrder
-
 from django.utils.timezone import now
 from datetime import timedelta
 from django.utils import timezone
- 
-
 
 class ORDER_TYPE_CHOICES(models.TextChoices):
     DELIVERY = 'DELIVERY', 'Delivery'
     PICKUP = 'PICKUP', 'Pickup'
     DINE_IN = 'DINE_IN', 'Dine In'
-
 
 class ORDER_STATUS_CHOICES(models.TextChoices):
     PENDING = 'PENDING', 'Pending'
@@ -22,15 +18,12 @@ class ORDER_STATUS_CHOICES(models.TextChoices):
     DUE = 'DUE', 'Due'
     VOIDED = 'VOIDED', 'Voided'
 
-
-
 class PAYMENT_STATUS_CHOICES(models.TextChoices):
     PENDING = 'PENDING', 'Pending'
     COMPLETED = 'COMPLETED', 'Completed'
     FAILED = 'FAILED', 'Failed'
     REFUNDED = 'REFUNDED', 'REFUNDED'
   
-
 class Category(models.Model):
     parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE,  related_name='subcategories')
     name = models.CharField(max_length=100, unique=True)
@@ -97,7 +90,6 @@ class Ingredient(models.Model):
     def __str__(self):
         return f"{self.id} "
     
-
 # Extra some food with product. 
 class ExtraFood(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="extra_foods")
@@ -114,7 +106,6 @@ class ExtraFood(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-
 class Floor(models.Model):
     name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(default=True)
@@ -123,7 +114,6 @@ class Floor(models.Model):
     def __str__(self):
         return f"{self.id}-{self.name}"
     
-
 class FloorTable(models.Model):
     name = models.CharField(max_length=100)
     floor = models.ForeignKey(Floor, on_delete=models.CASCADE, related_name='floor_tables')
@@ -247,7 +237,6 @@ class OrderChannel(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders")
-    # type = models.CharField(max_length=100, choices=ORDER_TYPE_CHOICES)
     order_channel = models.ForeignKey(
         OrderChannel,
         on_delete=models.SET_NULL,
@@ -307,8 +296,6 @@ class OrderReview(models.Model):
     def __str__(self):
         return f"{self.customer.name} - {self.order.id}: {self.rating} ⭐"
 
-
-    
 class OrderProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, related_name="orders")
     quantity = models.IntegerField(default=1)
@@ -318,10 +305,10 @@ class OrderProduct(models.Model):
     discount = models.DecimalField(max_digits=14, decimal_places=8, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)  
-    kitchenOrder = models.ForeignKey(KitchenOrder, on_delete=models.CASCADE, null=True, blank=True, related_name="orders")
+    kitchenOrder = models.ForeignKey(KitchenOrder, on_delete=models.CASCADE, null=True, blank=True, related_name="product_orders")
+    note = models.TextField(null=True, blank=True)
     def __str__(self):
         return f"{self.id}"
-
 
 class OrderIngredients(models.Model):
     """
@@ -377,10 +364,6 @@ class Payment(models.Model):
     supplier  = models.ForeignKey("inventory.Supplier",on_delete=models.SET_NULL, related_name='payments', null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, related_name='payments', null=True, blank=True)
     amount = models.DecimalField(max_digits=14, decimal_places=8)
-    # payment_method = models.CharField(
-    #     max_length=100, 
-    #     choices=PAYMENT_METHOD_CHOICES
-    # )
     payment_method = models.ForeignKey(
         PaymentMethod,
         on_delete=models.SET_NULL,

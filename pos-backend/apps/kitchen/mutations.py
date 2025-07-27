@@ -1,6 +1,6 @@
 import graphene
 from apps.base.utils import get_object_or_none, generate_message, create_graphql_error
-from .models import Kitchen
+from .models import Kitchen, KitchenOrder
 from apps.outlet.models import Outlet
 from .objectType import KitchenType
 from apps.base.utils import get_object_by_kwargs
@@ -69,9 +69,22 @@ class KitchenOrderMutation(graphene.Mutation):
         upsert_kitchen_order(order_id)
         return KitchenOrderMutation(success=True, message="Success")
     
+class UpdateKOTStatus(graphene.Mutation):
+    class Arguments:
+        kot_id  = graphene.ID(required=True)
+        status = graphene.String(required=True)
+    success = graphene.Boolean()
+    message = graphene.String()
+    def mutate(self, info, kot_id,status ):
+
+        kot = KitchenOrder.objects.get(id=kot_id)
+        kot.status = status
+        kot.save()
+        return UpdateKOTStatus(success=True, message="Success")
 
 class Mutation(graphene.ObjectType):
     create_Kitchen = CreateKitchen.Field()
     update_Kitchen = UpdateKitchen.Field()
     delete_Kitchen = DeleteKitchen.Field()
     upsert_kitchen_order = KitchenOrderMutation.Field() 
+    update_KOT_status= UpdateKOTStatus.Field()

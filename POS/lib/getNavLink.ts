@@ -124,7 +124,7 @@ export const navbarLinks: NavLinks = {
             items: [
                 {
                     title: 'KOT List',
-                    url: 'kot',
+                    url: '/kot',
                 },
 
             ],

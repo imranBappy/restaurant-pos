@@ -5,9 +5,7 @@ import { useQuery } from '@apollo/client';
 import { CUSTOMER_SEARCH_QUERY } from '@/graphql/accounts/queries';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { USER_TYPE } from '@/graphql/accounts';
-import { Button } from './ui/button';
-import { Plus } from "lucide-react";
-
+ 
 
 
 const CustomerSearch = ({ onSelect }: { onSelect: (user: USER_TYPE) => void }) => {
@@ -40,7 +38,7 @@ const CustomerSearch = ({ onSelect }: { onSelect: (user: USER_TYPE) => void }) =
         </div>
     ))
 
-    const elementContainer = <div className="absolute shadow dark:bg-black top-10 bg-white">
+    const elementContainer = <div className="absolute z-50 shadow dark:bg-black top-10 bg-white">
         <ScrollArea className="h-72   w-80 z-50 rounded-md border ">
             <div className="relative">
                 <h4 className="mb-4 px-4 mt-4 text-sm font-medium leading-none ">Search result</h4>
@@ -59,7 +57,7 @@ const CustomerSearch = ({ onSelect }: { onSelect: (user: USER_TYPE) => void }) =
     let content = users?.length ? elementContainer : notFound
 
     if (loading) content =
-        <div className="absolute shadow dark:bg-black top-10 bg-white">
+        <div className="absolute z-50 shadow dark:bg-black top-10 bg-white">
             <ScrollArea className="h-72 w-80 z-50 rounded-md   border ">
                 <p className="text-center mt-10 text-sm">Loading...</p>
             </ScrollArea>
@@ -78,9 +76,6 @@ const CustomerSearch = ({ onSelect }: { onSelect: (user: USER_TYPE) => void }) =
             >
                 {content}
             </SearchableFiled>
-            <Button variant={'secondary'}>
-                <Plus />
-            </Button>
         </div>
     );
 };

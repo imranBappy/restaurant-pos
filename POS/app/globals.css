@@ -100,10 +100,10 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey; 
+  box-shadow: inset 0 0 5px grey;
   border-radius: 10px;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: rgb(63, 63, 63);
@@ -115,15 +115,12 @@ body {
   background: rgb(31, 31, 31);
 }
 
-
-body{
+body {
   overflow-x: hidden;
   scrollbar-width: none;
 }
 
-
 /*  ---break--- */
-
 
 @layer base {
   * {
@@ -132,4 +129,25 @@ body{
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* In app/globals.css or a similar global stylesheet */
+.custom-scrollbar-horizontal::-webkit-scrollbar {
+  height: 8px; /* height of horizontal scrollbar */
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-track {
+  background: var(--bg-muted); /* track color, adjust to your theme */
+  border-radius: 10px;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-thumb {
+  background: var(--bg-accent); /* thumb color, adjust to your theme */
+  border-radius: 10px;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-thumb:hover {
+  background: var(
+    --bg-primary
+  ); /* thumb color on hover, adjust to your theme */
 }

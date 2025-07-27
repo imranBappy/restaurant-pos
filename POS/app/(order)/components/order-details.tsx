@@ -263,9 +263,9 @@ export const OrderDetails = ({ orderId }: { orderId: string }) => {
                         </div>
                         <div className="space-y-2">
                             <p className="text-[13px] font-medium text-muted-foreground uppercase tracking-wider">
-                                Type
+                                Order Channel
                             </p>
-                            <p>{order?.type?.split('_').join(' ')}</p>
+                            <p>{order?.orderChannel?.name}</p>
                         </div>
                         <div className="space-y-2">
                             <p className="text-[13px] font-medium text-muted-foreground uppercase tracking-wider">
@@ -355,7 +355,7 @@ export const OrderDetails = ({ orderId }: { orderId: string }) => {
                                                 ${toFixed(node.amount)}
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                {node.paymentMethod}
+                                                {node.paymentMethod?.name}
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 {node.remarks}
@@ -411,11 +411,12 @@ export const OrderDetails = ({ orderId }: { orderId: string }) => {
                                 <TableHead className="text-[13px] font-medium uppercase tracking-wider">
                                     VAT
                                 </TableHead>
-
                                 <TableHead className="text-[13px] font-medium uppercase tracking-wider">
                                     Discount
                                 </TableHead>
-
+                                <TableHead className="text-[13px] font-medium uppercase tracking-wider">
+                                    Note
+                                </TableHead>
                                 <TableHead className="text-[13px] font-medium uppercase tracking-wider">
                                     Ingredients
                                 </TableHead>
@@ -457,7 +458,9 @@ export const OrderDetails = ({ orderId }: { orderId: string }) => {
                                                 )
                                             )}
                                         </TableCell>
-
+                                        <TableCell className="py-4">
+                                            {node?.note || "N/A"}
+                                        </TableCell>
                                         <TableCell>
                                             {node?.orderIngredients?.edges
                                                 .map(

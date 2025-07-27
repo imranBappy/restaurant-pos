@@ -3,7 +3,7 @@ import { ORDER_TYPE, } from "@/graphql/product/types"
 import moment from "moment"
 import { Badge } from "@/components/ui/badge"
 import { COUNT_TYPE } from "@/graphql/types"
-import { getStatusStyle, toFixed, underscoreToSpace } from "@/lib/utils"
+import { getStatusStyle, toFixed,   } from "@/lib/utils"
 import PaymentModal from "@/app/(payment)/components/order-payment/payment-modal"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -42,10 +42,10 @@ export const columns: ColumnDef<ORDER_TYPE>[] = [
         cell: ({ row }) => <div className="capitalize">{toFixed(row.getValue('due'))}</div>,
     },
     {
-        accessorKey: "type",
-        header: "Type",
+        accessorKey: "orderChannel",
+        header: "Channel",
         cell: ({ row }) => (
-            <div className="capitalize">{underscoreToSpace(row.getValue("type"))}</div>
+            <div className="capitalize">{row.getValue("orderChannel")}</div>
         )
     },
     {
@@ -98,7 +98,7 @@ export const columns: ColumnDef<ORDER_TYPE>[] = [
                         row.getValue('status') !== ORDER_STATUSES.PENDING ? <InvoiceGenerate order={order} /> : <Button variant={'secondary'}
                             disabled={row.getValue('status') !== ORDER_STATUSES.PENDING}
                         >
-                            <Link href={`/orders/pos?id=${row.original.id}&orderId=${row.original.orderId.replace("#", "")}`}>
+                            <Link href={`/orders/pos?id=${row.original.id}&orderId=${row.original?.orderId?.replace("#", "")}`}>
                                 Edit
                             </Link>
                         </Button>

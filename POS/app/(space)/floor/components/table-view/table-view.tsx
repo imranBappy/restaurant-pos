@@ -1,9 +1,9 @@
 "use client"
 import React, { useContext, useEffect, useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { ChevronRight } from "lucide-react";
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { FLOOR_TYPE, FLOOR_TABLES_QUERY, FLOORS_QUERY, FLOOR_TABLES_TYPE } from '@/graphql/product';
+import { FLOOR_TYPE, FLOOR_TABLES_QUERY, FLOORS_QUERY, FLOOR_TABLES_TYPE, FREE_TABLE } from '@/graphql/product';
 
 import { cn } from '@/lib/utils';
 import CategoryCard from './category-card';
@@ -54,12 +54,20 @@ const TableView = ({
         orderBy: '',
     })
     const debouncedSearch = useDebouncedValue(filters.search, 500);
-
     const tableState = useStore((store) => store.table)
     const addTable = useStore((store) => store.addTable)
     const removeTable = useStore((store) => store.removeTable)
-
-
+    const [freeTable,] = useMutation(FREE_TABLE, {
+        refetchQueries: [
+            {
+                query: FLOOR_TABLES_QUERY,
+                variables: {
+                    first: 10,
+                    offset: 0,
+                },
+            },
+        ],
+    })
 
 
     const sidebarContext = useContext(SidebarContext)
@@ -149,9 +157,12 @@ const TableView = ({
 
 
     const handleBookUnbook = (table: FLOOR_TABLES_TYPE) => {
-        console.log(table);
-        if (!table.isBooked) {
-            handleNext()
+        if (table.isBooked) {
+            freeTable({
+                variables: {
+                    id: table.id
+                }
+            })
         }
 
     }

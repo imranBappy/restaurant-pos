@@ -4,11 +4,12 @@ import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '@radix-ui/react-separator';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '../ui/breadcrumb';
 import { Button } from '../ui/button';
-import { Moon, Sun, ShoppingBasket, Table } from 'lucide-react';
+import { Moon, Sun, ShoppingBasket, } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { usePathname } from 'next/navigation'
 import Link from 'next/link';
 import { Badge } from "@/components/ui/badge"
+import { MdTableBar } from "react-icons/md";
 
 
 
@@ -55,7 +56,7 @@ const Header = () => {
             <div className=' flex gap-2'>
                 <Link href={`/space`}>
                     <Button size={'icon'} variant={'secondary'} title='Table'>
-                        <Table />
+                        <MdTableBar />
                     </Button>
                 </Link>
                 <Link href={`/orders/pos`}>

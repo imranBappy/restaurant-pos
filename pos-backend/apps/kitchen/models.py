@@ -45,6 +45,7 @@ class KitchenOrder(models.Model):
         null=True,
         blank=True,
         related_name="kitchen_orders",
+        default='1'
     )
     # Use string literal for ForeignKey to avoid circular import
     order = models.ForeignKey(

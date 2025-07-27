@@ -23,7 +23,7 @@ from apps.product.models import PaymentMethod
 from .forms import OrderChannelForm
 from apps.product.models import OrderChannel
 # from .objectType import OrderChannelType
-
+from apps.kitchen.services import upsert_kitchen_order
 
 
 class IngredientCUD(DjangoFormMutation):
@@ -115,10 +115,12 @@ class OrderProductInputType(graphene.InputObjectType):
     product = graphene.ID(required=True)
     quantity = graphene.Int(required=True)
     discount = graphene.Decimal(required=True)
+    note = graphene.String(required=False)
+
 
 class OrderInputType(graphene.InputObjectType):
     user = graphene.ID(required=False) # update able
-    type = graphene.String(required=True) # update able
+    order_channel = graphene.String(required=True) # update able
     due_payment_date =  graphene.String(required=False) # update able
     status = graphene.String(required=True) # update able
     outlet = graphene.String(required=True)
@@ -146,7 +148,7 @@ class OrderCU(graphene.Mutation):
                 # form validation
                 orderInput = {
                         "user" : input['user'],
-                        "type" : input['type'],
+                        "order_channel" : input['order_channel'],
                         "due_payment_date"  : input['due_payment_date'],
                         "status" : input['status'],
                         "outlet" : input['outlet'],
@@ -275,7 +277,7 @@ class OrderCUV2(graphene.Mutation):
                 
                 OrderCUV2._validate_stock_and_update(items, order)
                 OrderCUV2._book_table(table_bookings=input.get('table_bookings'),order=order)
-
+                OrderCUV2._createKOT(order.id)
                 return OrderCUV2(message="Success", success=True, order=order)
         except Exception as e:
             print(e)
@@ -491,6 +493,10 @@ class OrderCUV2(graphene.Mutation):
         #             countdown=duration_minutes * 60          
         #         )
     
+    def _createKOT(order_id):
+        kot = upsert_kitchen_order(order_id=order_id)
+        
+
 
 class OrderCancel(graphene.Mutation):
     class Arguments:
@@ -871,7 +877,19 @@ class UpsertOrderChannel(DjangoFormMutation):
             )
         create_graphql_error(form)
 
-
+# free table 
+class TableBookToggle(graphene.Mutation):
+    message = graphene.String()
+    success = graphene.Boolean()    
+    class Arguments:
+        id = graphene.ID(required=True)
+    
+    def mutate(self, info, id):
+        table = get_object_by_kwargs(FloorTable, {"id": id})
+        if table:
+            table.is_booked = False if table.is_booked else True
+            table.save()
+        return TableBookToggle(success=True, message="Update!")
 class Mutation(graphene.ObjectType):
     product_cud = ProductCUD.Field()
     delete_product = DeleteProduct.Field()
@@ -890,3 +908,4 @@ class Mutation(graphene.ObjectType):
     order_cancel = OrderCancel.Field()
     upsert_payment_method = UpsertPaymentMethod.Field()
     upsert_order_channel = UpsertOrderChannel.Field()
+    tableBookToggle = TableBookToggle.Field()

@@ -90,7 +90,7 @@ const TableCard = ({
             <div className="mb-2 text-sm text-gray-700 dark:text-gray-200 text-center">{statusText}</div>
             {/* Book/Free Button */}
             <Button
-                onClick={e => {
+                onClick={() => {
                     // e.stopPropagation();
                     handleBookUnbook();
                 }}

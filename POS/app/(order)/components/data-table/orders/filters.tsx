@@ -9,7 +9,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { X } from "lucide-react"
-import {  ORDER_STATUSES_LIST, ORDER_TYPE_LIST } from "@/constants/order.constants"
+import { ORDER_STATUSES_LIST, ORDER_TYPE_LIST } from "@/constants/order.constants"
+import { useQuery } from "@apollo/client"
+import { ORDER_CHANNEL_TYPE, ORDER_CHANNELS_QUERY } from "@/graphql/order"
+import { OPTION_TYPE } from "@/components/input"
+import { toast } from "@/hooks/use-toast"
 
 const ORDER_TYPE = [...ORDER_TYPE_LIST]
 const ORDER_STATUSES = [...ORDER_STATUSES_LIST]
@@ -19,7 +23,7 @@ ORDER_TYPE.unshift('ALL')
 const ORDER_SORT = ['ALL', '-createdAt', 'createdAt', '-final_amount', 'final_amount']
 export interface FilterState {
   search: string | undefined;
-  type: typeof ORDER_TYPE[number] | undefined;
+  orderChannel: typeof ORDER_TYPE[number] | undefined;
   status: typeof ORDER_STATUSES[number] | undefined;
   orderBy: typeof ORDER_SORT[number] | undefined;
 }
@@ -46,21 +50,36 @@ export function TableFilters({ filters, onFilterChange }: FiltersProps) {
   const handleClearFilters = () => {
     onFilterChange('search')(undefined)
     onFilterChange('status')('ALL')
-    onFilterChange('type')('ALL')
+    onFilterChange('orderChannel')('ALL')
     onFilterChange('orderBy')('ALL')
     setDebouncedSearch('')
   };
+  const { loading: orderChannelsLoading, data: orderChannelsRes } = useQuery(ORDER_CHANNELS_QUERY, {
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
+  const orderChannels: OPTION_TYPE[] = orderChannelsRes?.orderChannels?.edges?.map(({ node }: { node: ORDER_CHANNEL_TYPE }) => ({
+    value: node.id,
+    label: node.name,
+  })) || [];
 
   useEffect(() => {
     const timer = setTimeout(() => {
       onFilterChange("search")(debouncedSearch)
     }, 500)
     return () => clearTimeout(timer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch])
 
-
+  if (orderChannelsLoading) {
+    return <p>Filter loading...</p>
+  }
 
   return (
     <>
@@ -75,16 +94,16 @@ export function TableFilters({ filters, onFilterChange }: FiltersProps) {
 
         <div className="space-y-2">
           <Select
-            value={filters.type}
-            onValueChange={handleFilterChange('type')}
+            value={filters.orderChannel}
+            onValueChange={handleFilterChange('orderChannel')}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Order Type" />
+              <SelectValue placeholder="Select Order channel" />
             </SelectTrigger>
             <SelectContent>
               {
-                ORDER_TYPE.map((type, index) => (
-                  <SelectItem key={index} value={type}>{type}</SelectItem>
+                orderChannels.map((item, index) => (
+                  <SelectItem key={index} value={item.value}>{item.label}</SelectItem>
                 ))
               }
             </SelectContent>

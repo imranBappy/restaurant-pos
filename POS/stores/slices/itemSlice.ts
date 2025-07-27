@@ -19,6 +19,7 @@ export interface ItemState {
   removeItem: (id: string) => void;
   clearItems: () => void;
   addItems: (items: ITEMS_TYPE) => void;
+  
 }
 
 export const itemSlice: StateCreator<ItemState, [], [], ItemState> = (set) => ({

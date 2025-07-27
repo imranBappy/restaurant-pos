@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Minus, Plus } from 'lucide-react';
 import Link from "next/link";
+import { ItemNoteDialog } from './item-note-modal';
 
 interface PROPS_TYPE {
     name: string;
@@ -9,13 +10,14 @@ interface PROPS_TYPE {
     onPlusItem?: () => void;
     onMinusItem: () => void;
     discount?: number;
+    id:string
 }
 
-const CardItem = ({ name, price, quantity, discount = 0, onPlusItem, onMinusItem }: PROPS_TYPE) => {
+const CardItem = ({ name, price, quantity, discount = 0,id, onPlusItem, onMinusItem }: PROPS_TYPE) => {
     const finalPrice = price - discount;
 
     return (
-        <div className="flex items-center justify-between p-2 border rounded-md shadow-sm bg-card text-card-foreground hover:bg-card/90 transition-colors duration-200 ease-in-out text-sm">
+        <div className="flex  items-center justify-between p-2 border rounded-md shadow-sm bg-card text-card-foreground hover:bg-card/90 transition-colors duration-200 ease-in-out text-sm">
             <div className="flex-1 min-w-0">
                 {/* Product Name */}
                 <Link href='#' className="block text-base font-semibold truncate text-primary hover:underline">
@@ -36,8 +38,12 @@ const CardItem = ({ name, price, quantity, discount = 0, onPlusItem, onMinusItem
                     </span>
                 </div>
             </div>
+            <div className=' mr-2 pr-2 border-r'>
+                <ItemNoteDialog item={{ name: name, id:id }} />
+            </div>
+
             {/* Quantity Adjustment Controls */}
-            <div className="flex items-center space-x-1 ml-2">
+            <div className="flex items-center space-x-1 ml-2 ">
                 <Button
                     onClick={onMinusItem}
                     variant="outline"

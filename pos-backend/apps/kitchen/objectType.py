@@ -15,9 +15,9 @@ class KitchenType(DjangoObjectType):
         connection_class = CountConnection
 
 class KitchenOrderType(DjangoObjectType):
+    id = graphene.ID(required=True)
     class Meta:
         model = KitchenOrder
-        fields = "__all__"
         filterset_class = KitchenOrderFilter
         interfaces = (graphene.relay.Node,)
         connection_class = CountConnection

@@ -241,95 +241,95 @@ export const SUBCATEGORIES_QUERY = gql`
 `
 
 export const ORDERS_QUERY = gql`
-    query MyQuery(
-        $first: Int
-        $orderBy: String
-        $offset: Int
-        $search: String
-        $type: ProductOrderTypeChoices
-        $status: ProductOrderStatusChoices
-        $outlet: ID
-    ) {
-        orders(
-            first: $first
-            orderBy: $orderBy
-            offset: $offset
-            search: $search
-            type: $type
-            status: $status
-            outlet: $outlet
-        ) {
-            totalCount
-            edges {
-                node {
-                    id
-                    createdAt
-                    status
-                    finalAmount
-                    type
-                    orderId
-                    due
-                    amount
-                    user {
-                        id
-                        name
-                        email
-                    }
-                    outlet {
-                        email
-                        id
-                        address
-                        name
-                        phone
-                    }
-                    payments {
-                        totalCount
-                        edges {
-                            node {
-                                amount
-                                createdAt
-                                id
-                                paymentMethod
-                                remarks
-                                status
-                                trxId
-                            }
-                        }
-                    }
-                    items {
-                        totalCount
-                        edges {
-                            node {
-                                price
-                                quantity
-                                id
-                                discount
-                                vat
-                                
-                                product {
-                                    id
-                                    images
-                                    price
-                                    name
-                                    vat
-                                    sku
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+query MyQuery($first: Int, $orderBy: String, $offset: Int, $search: String, $status: ProductOrderStatusChoices, $outlet: ID, $orderChannel: ID ) {
+  orders(
+    first: $first
+    orderBy: $orderBy
+    offset: $offset
+    search: $search
+    status: $status
+    outlet: $outlet
+    orderChannel: $orderChannel
+  ) {
+    totalCount
+    edges {
+      node {
+        id
+        createdAt
+        status
+        finalAmount
+        orderId
+        due
+        amount
+        orderChannel{
+          id, name
         }
+        user {
+          id
+          name
+          email
+        }
+        outlet {
+          email
+          id
+          address
+          name
+          phone
+        }
+        payments {
+          totalCount
+          edges {
+            node {
+              amount
+              createdAt
+              id
+              paymentMethod{
+                name
+                id
+              }
+              remarks
+              status
+              trxId
+            }
+          }
+        }
+        items {
+          totalCount
+          edges {
+            node {
+              price
+              quantity
+              id
+              discount
+              vat
+              product {
+                id
+                images
+                price
+                name
+                vat
+                sku
+              }
+            }
+          }
+        }
+      }
     }
+  }
+}
 `;
 export const ORDER_QUERY = gql`
-    query MyQuery($id: ID!) {
+     query MyQuery($id: ID!) {
         order(id: $id) {
             status
             finalAmount
             due
             amount
-            type
+            orderChannel{
+              id
+              name
+              type
+            }
             id
             orderId
 
@@ -379,7 +379,11 @@ export const ORDER_QUERY = gql`
                         amount
                         createdAt
                         id
-                        paymentMethod
+                        paymentMethod{
+                          id
+                          name
+                          type
+                        }
                         remarks
                         status
                         trxId
@@ -402,12 +406,14 @@ export const ORDER_QUERY = gql`
                         id
                         discount
                         vat
+                      	note
                         orderIngredients {
                             totalCount
                             edges {
                                 node {
                                     quantity
                                     id
+                                  	
                                     item {
                                         id
                                         name

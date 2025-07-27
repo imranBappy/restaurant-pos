@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { randomId, toFixed, underscoreToSpace } from '@/lib/utils';
 import { Button } from '@/components/button';
-import { SwitchItem, TextField } from '@/components/input';
+import {   SwitchItem, TextField } from '@/components/input';
 import { PAYMENT_METHODS_TYPE } from '@/constants/payment.constants';
 import Modal, { BUTTON_VARIANT_TYPE } from '@/components/modal';
 import { useEffect, useState } from 'react';
@@ -177,7 +177,7 @@ const PaymentModal = ({ openBtnClassName = 'w-full', id, variant = 'default', or
     const order = orderRes?.order;
 
     const handlePayment = async (data: paymentFormValues) => {
-        
+
         try {
             if (!_orderId && !id) {
                 toast({
@@ -194,7 +194,7 @@ const PaymentModal = ({ openBtnClassName = 'w-full', id, variant = 'default', or
                 });
                 return;
             }
-                
+
             if (
                 Number(toFixed(data.amount)) >
                 Number(toFixed(order.finalAmount))
@@ -259,9 +259,9 @@ const PaymentModal = ({ openBtnClassName = 'w-full', id, variant = 'default', or
             setDefaultAddress({ ...add, user: orderRes?.order?.user?.id, default: true })
         }
 
-    }   
-    console.log({isModelOpen});
-    
+    }
+    console.log({ isModelOpen });
+
 
     // if (loading) return <Loading />;
 
@@ -275,7 +275,7 @@ const PaymentModal = ({ openBtnClassName = 'w-full', id, variant = 'default', or
             variant={variant}
             isCloseBtn={false}
             onOpenChange={setIsModalOpen}
-            open={ isModelOpen  && !disabled }
+            open={isModelOpen && !disabled}
             onOpen={onPaymentRequest}
         >
             <Form {...paymentForm}>
@@ -323,7 +323,7 @@ const PaymentModal = ({ openBtnClassName = 'w-full', id, variant = 'default', or
                                 options={PAYMENT_METHODS_TYPE.map((item) => ({
                                     label: item,
                                     value: item,
-                                }))}
+                                })) }
                                 placeholder="Select payment "
                             />
                         </div>

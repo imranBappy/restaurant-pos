@@ -11,6 +11,7 @@ export interface CARD_TYPE {
     product?: PRODUCT_TYPE,
     itemId?: number
     totalDiscount: number
+    note?: string;
 }
 export interface CartState {
     cart: CARD_TYPE[],
@@ -20,7 +21,7 @@ export interface CartState {
     clearCart: () => void;
     incrementItemQuantity: (id: string) => void;
     decrementItemQuantity: (id: string) => void;
-
+    addItemNote: (id: string, note: string) => void;
 }
 
 export const createCartSlice: StateCreator<CartState, [], [], CartState> = (set) => ({
@@ -51,6 +52,9 @@ export const createCartSlice: StateCreator<CartState, [], [], CartState> = (set)
     addCarts: (items: CARD_TYPE[]) => set({ cart: [...items] }),
     removeCart: (id) => set((state) => ({
         cart: state.cart.filter((item) => item.id !== id)
+    })),
+    addItemNote: (id: string, note: string) => set((state) => ({
+        cart: state.cart.map((item) => item.id === id ? { ...item, note: note } : item)
     })),
     clearCart: () => set({ cart: [] })
 })

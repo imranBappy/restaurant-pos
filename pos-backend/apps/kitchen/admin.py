@@ -8,7 +8,7 @@ class KitchenAdmin(admin.ModelAdmin):
    
 @admin.register(KitchenOrder)
 class KitchenOrderAdmin(admin.ModelAdmin):
-    list_display = ['id']
+    list_display = ['id','status']
 
 @admin.register(Printer)
 class PrinterAdmin(admin.ModelAdmin):

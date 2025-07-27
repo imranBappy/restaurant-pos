@@ -56,7 +56,6 @@ const Pos = () => {
     const incrementItemQuantity = useStore(
         (store) => store.incrementItemQuantity
     );
-
     const sidebarContext = useContext(SidebarContext);
 
 

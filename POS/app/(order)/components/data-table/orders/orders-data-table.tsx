@@ -22,7 +22,7 @@ export const OrdersDataTable = () => {
     const [filters, setFilters] = useState<FilterState>({
         search: '',
         status: undefined,
-        type: undefined,
+        orderChannel: undefined,
         orderBy: undefined,
     })
     const { toast } = useToast()
@@ -33,7 +33,7 @@ export const OrdersDataTable = () => {
             first: pagination.pageSize,
             ...filters,
             status: filters.status === 'ALL' ? undefined : filters.status,
-            type: filters.type === 'ALL' ? undefined : filters.type,
+            orderChannel: filters.orderChannel === 'ALL' ? undefined : filters.orderChannel,
             orderBy: filters.orderBy === 'ALL' ? undefined : filters.orderBy,
             search: filters.search === '' ? undefined : filters.search,
         },
@@ -63,7 +63,7 @@ export const OrdersDataTable = () => {
         user: node.user,
         address: node.address,
         items: node.items,
-        type: node.type,
+        orderChannel: node.orderChannel?.name || "Dine In",
         orderId: node.orderId,
         due: node.due || 0,
         outlet: node.outlet,

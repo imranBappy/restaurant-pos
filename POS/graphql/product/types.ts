@@ -32,7 +32,7 @@ export interface PRODUCT_TYPE {
         totalCount: number;
         edges: { node: ORDER_ITEM_TYPE }[];
     };
-    
+
 }
 export interface CATEGORY_TYPE {
     id: string;
@@ -59,13 +59,18 @@ export interface ORDER_ITEM_TYPE {
     price: number;
     discount?: number;
     vat: number;
-    order:ORDER_TYPE
+    order: ORDER_TYPE
+    note?: string;
     orderIngredients?: {
         totalCount: number;
         edges: { node: ORDER_INGREDIENT_TYPE }[];
     };
 }
 
+export interface ORDER_CHANNEL {
+    id: string;
+    name: string
+}
 
 
 export interface ORDER_TYPE {
@@ -82,7 +87,7 @@ export interface ORDER_TYPE {
     subcategory: RELATED_TYPE | string;
     orderItems: ORDER_ITEM_TYPE[];
     address: ADDRESS_TYPE;
-    type: string;
+    orderChannel: ORDER_CHANNEL;
     orderId: string
     outlet: OUTLET_TYPE
     items?: {
@@ -117,7 +122,10 @@ export interface FLOOR_TYPE {
 export interface PAYMENT_TYPE {
     id: string;
     user: USER_TYPE;
-    paymentMethod: string;
+    paymentMethod: {
+        id?: string,
+        name: string,
+    };
     amount: number;
     status: string;
     createdAt: string;

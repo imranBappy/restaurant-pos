@@ -64,7 +64,7 @@ export const ORDER_CANCEL = gql`
 `;
 
 export const ORDER_MUTATION_V2 = gql`
-    mutation MyMutation2($input: OrderInputType!) {
+      mutation MyMutation2($input: OrderInputType!) {
         orderCuv2(input: $input) {
             message
             success
@@ -76,7 +76,10 @@ export const ORDER_MUTATION_V2 = gql`
                 duePaymentDate
                 due
                 status
-                type
+                orderChannel{
+                  id,
+                  name
+                }
             }
         }
     }
@@ -195,6 +198,15 @@ mutation MyMutation($id: String, $item: ID! , $product: ID!, $quantity: Decimal!
 export const DELETE_INGREDIENT = gql`
 mutation MyMutation($id: ID!) {
   deleteIngredient(id: $id) {
+    message
+    success
+  }
+}
+`
+
+export const FREE_TABLE = gql`
+mutation MyMutation($id: ID!) {
+  tableBookToggle(id: $id) {
     message
     success
   }
