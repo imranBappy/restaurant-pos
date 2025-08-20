@@ -1,4 +1,4 @@
-import { ORDER_ITEM_TYPE, ORDER_TYPE } from "../product";
+import { ORDER_ITEM_TYPE, ORDER_TYPE, PRODUCT_TYPE } from "../product";
 
 interface RELATED_TYPE {
     id: string;
@@ -12,6 +12,7 @@ export interface KITCHEN_ORDER_TYPE {
     createdAt?: string;
     kitchen: RELATED_TYPE;
     order: ORDER_TYPE;
+    tables?: string
     productOrders: {
         totalCount: number,
         edges: { node: ORDER_ITEM_TYPE }[]

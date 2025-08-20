@@ -104,7 +104,7 @@ export const navbarLinks: NavLinks = {
         },
         {
             title: 'Payment',
-            url: '/payments',
+            url: '#',
             icon: HandCoins,
             items: [
                 {

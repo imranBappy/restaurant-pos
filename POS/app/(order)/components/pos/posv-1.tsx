@@ -7,7 +7,7 @@ import {
     ORDERS_QUERY,
     ORDER_QUERY,
     DELETE_ORDER_PRODUCT,
-    FLOOR_TABLES_TYPE,
+    FLOOR_TABLE_TYPE,
     CHECK_INGREDIENT_AVAILABLE,
     ORDER_MUTATION_V2,
 } from '@/graphql/product';
@@ -146,10 +146,10 @@ const Pos = () => {
                     itemId: node.id,
                     totalDiscount: node.discount
                         ? parseFloat(`${toFixed(node.discount)}`) +
-                          findVat(
-                              parseFloat(`${node.discount}`),
-                              node?.product?.vat || 1
-                          )
+                        findVat(
+                            parseFloat(`${node.discount}`),
+                            node?.product?.vat || 1
+                        )
                         : 0,
                 })
             );
@@ -205,7 +205,7 @@ const Pos = () => {
             ).toFixed(2);
             const amount = calculatePrice(cart).toFixed(2);
 
-            const tableBookings = tableState.map((item: FLOOR_TABLES_TYPE) => [
+            const tableBookings = tableState.map((item: FLOOR_TABLE_TYPE) => [
                 item.id,
                 60,
             ]);
@@ -274,7 +274,7 @@ const Pos = () => {
                             discount: item.discount.toFixed(2),
                             order: order.data.orderCud.order.id,
                             vat: item.vat,
-                            
+
                         },
                     })
                 )
@@ -355,7 +355,7 @@ const Pos = () => {
 
             const amount = calculatePrice(cart).toFixed(2);
 
-            const tableBookings = tableState.map((item: FLOOR_TABLES_TYPE) => [
+            const tableBookings = tableState.map((item: FLOOR_TABLE_TYPE) => [
                 item.id,
                 60,
             ]);
@@ -388,7 +388,7 @@ const Pos = () => {
                     })),
                 },
             };
-            
+
             const order = await createOrder({
                 variables: variables,
             });
@@ -472,10 +472,9 @@ const Pos = () => {
                             <div className="flex justify-between items-start">
                                 <div>
                                     <p className="font-medium">
-                                        {`${
-                                            selectedUser?.name ||
+                                        {`${selectedUser?.name ||
                                             'Walk-in Customer'
-                                        }`}{' '}
+                                            }`}{' '}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
                                         {selectedUser?.email ||

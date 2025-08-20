@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client';
 import {
     PRODUCT_TYPE,
     ORDER_QUERY,
-    FLOOR_TABLES_TYPE,
+    FLOOR_TABLE_TYPE,
 } from '@/graphql/product';
 import { cn, findVat, toFixed } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
@@ -21,6 +21,8 @@ import useStore from '@/stores';
 import { CARD_TYPE } from '@/stores/slices/cartSlice';
 
 import POSCart from './POSCart';
+// import KOTTicket from './print-kot';
+// import CustomerInvoice from './CustomerInvoice';
 export const calculateDiscount = (
     price: number,
     vat: number,
@@ -87,7 +89,7 @@ const Pos = () => {
             );
 
             const bookedTables = order?.tableBookings?.edges?.map(
-                ({ node }: { node: FLOOR_TABLES_TYPE }) => ({
+                ({ node }: { node: FLOOR_TABLE_TYPE }) => ({
                     id: node.floorTable?.id,
                     name: node.floorTable?.name,
                     createdAt: node.floorTable?.createdAt,
@@ -136,7 +138,6 @@ const Pos = () => {
     useEffect(() => {
         handleFilterChange('search')(debouncedSearch);
     }, [debouncedSearch]);
-
     return (
         <div className="w-full h-[calc(100vh-100px)] flex gap-4">
             <div

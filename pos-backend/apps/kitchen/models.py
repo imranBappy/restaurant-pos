@@ -60,8 +60,7 @@ class KitchenOrder(models.Model):
     status = models.CharField(
         max_length=20, choices=KITCHEN_ORDER_STATUS, default="PENDING"
     )
-    
-    
+    tables = models.CharField(null=True,blank=True, )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

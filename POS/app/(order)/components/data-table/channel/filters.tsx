@@ -98,7 +98,7 @@ export function TableFilters({ filters, onFilterChange }: FiltersProps) {
         <Button
           variant="outline"
           onClick={() => {
-            router.push("/payments/method/add")
+            router.push("/orders/channel/add")
           }}
           className="text-sm"
         >

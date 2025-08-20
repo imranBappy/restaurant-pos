@@ -1,5 +1,5 @@
 'use client';
-import React, { memo, useState } from 'react';
+import React, { memo, useRef, useState } from 'react';
 
 import { findVat, randomId, toFixed } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
@@ -23,6 +23,8 @@ import { ORDER_CHANNEL_TYPE, ORDER_CHANNELS_QUERY } from '@/graphql/order';
 import { OPTION_TYPE } from '@/components/input';
 import { Users, LayoutList, } from 'lucide-react'; // Import icons for better visual cues
 import AddCustomer from './add-customer';
+import InputDiscount from './input-diescount';
+import { printKot } from '@/lib/prints';
 
 const calculatePrice = (cart: CARD_TYPE[]) => {
     const result = cart?.reduce((total, item) => {
@@ -72,6 +74,7 @@ const POSCart = () => {
     const [selectedUser, setSelectedUser] = useState<USER_TYPE>();
     const clearTable = useStore((store) => store.clearTable);
     const [orderChannel, setOrderChannel] = useState("1"); // Default to '1' or a sensible default ID
+    const printRef = useRef<HTMLDivElement>(null);
 
     const { loading: orderChannelsLoading, data: orderChannelsRes } = useQuery(ORDER_CHANNELS_QUERY, {
         onError: (error) => {
@@ -132,6 +135,7 @@ const POSCart = () => {
     const isDisablePlaceOrder = createOrderLoading;
 
     const handlePlaceOrderV2 = async () => {
+
         try {
             setOrderId(undefined);
             if (!cart.length) {
@@ -155,7 +159,7 @@ const POSCart = () => {
 
             const tableBookings = tableState.map((item: FLOOR_TABLES_TYPE) => [
                 item.id,
-                60,
+                item?.floor?.id,
             ]);
 
             const variables = {
@@ -178,10 +182,22 @@ const POSCart = () => {
 
             console.log(variables); // Keep for debugging as in original code
 
-            await createOrder({
+            const res = await createOrder({
                 variables: variables,
             });
+            console.log({ res });
 
+            await printKot(printRef, {
+                kotNumber: "KOT-00123",
+                table: "Table 5",
+                waiter: "John",
+                time: new Date(),
+                items: [
+                    { name: "Chicken Biryani", qty: 2, note: "Less spicy" },
+                    { name: "Paneer Butter Masala", qty: 1, note: "" },
+                    { name: "Garlic Naan", qty: 3, note: "Extra garlic" },
+                ],
+            })
 
         } catch (error) {
             console.error("Error in handlePlaceOrderV2:", error);
@@ -286,16 +302,21 @@ const POSCart = () => {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                    <DiscountModel />
+                    {/* <DiscountModel /> */}
+                    <InputDiscount />
                     <div className="grid grid-cols-2 gap-3">
-                        <PaymentModal
+                        {/* <PaymentModal
                             variant="default"
                             openBtnName="Payment"
                             orderId={orderId}
                             disabled={isDisablePlaceOrder || cart.length === 0}
                             onPaymentRequest={handlePlaceOrderV2}
-
-                        />
+                        /> */}
+                        <Button
+                            className="w-full text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
+                        >
+                            KOT
+                        </Button>
                         <Button
                             disabled={cart?.length === 0 || isDisablePlaceOrder}
                             isLoading={createOrderLoading}
@@ -304,6 +325,7 @@ const POSCart = () => {
                         >
                             Place Order
                         </Button>
+
                     </div>
                 </div>
             </div>

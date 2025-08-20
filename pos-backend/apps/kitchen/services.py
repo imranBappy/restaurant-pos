@@ -1,11 +1,15 @@
-from apps.product.models import Order
+from apps.product.models import Order, FloorTable
 from apps.kitchen.models import KitchenOrder
 from apps.kitchen.models import Printer
 from datetime import datetime, timedelta
+import json 
 
 # write function to generate KOT (Kitchen Order Ticket)
-def upsert_kitchen_order(order_id):
+def upsert_kitchen_order(order_id, table_bookings):
     try:
+        print("table_bookings",table_bookings)
+        table_bookings = json.loads(table_bookings)
+        table = FloorTable.objects.get(id=table_bookings[0][0])
         order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
         print(f"Order with ID {order_id} not found.")
@@ -13,7 +17,6 @@ def upsert_kitchen_order(order_id):
 
     # Unpack the tuple returned by get_or_create to get the object and a boolean flag
     kot, created = KitchenOrder.objects.get_or_create(order=order)
-
     cooking_time = 0
     # Assuming order.items is a ManyRelatedManager for related OrderProduct objects
     # and OrderProduct has a 'product' ForeignKey and 'kitchenOrder' ForeignKey
@@ -42,7 +45,7 @@ def upsert_kitchen_order(order_id):
     kot.cooking_time = int(cooking_time)
     kot.status = "PENDING" # Setting status to PENDING on upsert
     kot.completion_time = datetime.now() + timedelta(minutes=cooking_time)
-
+    kot.tables = table.name
     # Save the updated KitchenOrder instance
     kot.save()
 

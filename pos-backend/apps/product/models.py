@@ -146,10 +146,8 @@ class Coupon(models.Model):
     ]
     discount_type = models.CharField(max_length=50, choices=DISCOUNT_TYPE_CHOOSE)
     discount_value = models.DecimalField(max_digits=12, decimal_places=8) # percentage or amount
-    
     max_discount = models.DecimalField(max_digits=12, decimal_places=8, null=True, blank=True)  # The maximum amount a discount can provide when the coupon type is "Percentage."
     min_order_value = models.DecimalField(max_digits=12, decimal_places=8,  null=True, blank=True) # The minimum order amount required for the coupon to be valid.
-    
     valid_from = models.DateTimeField()
     valid_until  = models.DateTimeField()
     usage_limit = models.IntegerField(default=0)

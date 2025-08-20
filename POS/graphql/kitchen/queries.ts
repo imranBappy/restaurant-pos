@@ -44,6 +44,7 @@ query MyQuery($orderBy: String, $status: KitchenKitchenOrderStatusChoices, $afte
         completionTime
         cookingTime
         createdAt
+        tables
         kitchen {
           id
           photo

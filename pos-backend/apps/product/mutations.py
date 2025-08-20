@@ -277,7 +277,7 @@ class OrderCUV2(graphene.Mutation):
                 
                 OrderCUV2._validate_stock_and_update(items, order)
                 OrderCUV2._book_table(table_bookings=input.get('table_bookings'),order=order)
-                OrderCUV2._createKOT(order.id)
+                OrderCUV2._createKOT(order.id, input.get('table_bookings'))
                 return OrderCUV2(message="Success", success=True, order=order)
         except Exception as e:
             print(e)
@@ -452,14 +452,10 @@ class OrderCUV2(graphene.Mutation):
         
 
     def _book_table(table_bookings, order):
-        booking_expired()
+        # booking_expired()
         booked_tables = TableBooking.objects.filter(order=order.id)
-        print(booked_tables)
         for table in booked_tables:
-            
-
             table = FloorTable.objects.get(id=table.floor_table.id)
-            
             table.is_booked = False
             table.save()
             booked_tables.delete()
@@ -493,8 +489,8 @@ class OrderCUV2(graphene.Mutation):
         #             countdown=duration_minutes * 60          
         #         )
     
-    def _createKOT(order_id):
-        kot = upsert_kitchen_order(order_id=order_id)
+    def _createKOT(order_id, table_bookings):
+        kot = upsert_kitchen_order(order_id=order_id, table_bookings=table_bookings)
         
 
 

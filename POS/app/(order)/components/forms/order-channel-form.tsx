@@ -118,24 +118,7 @@ export function OrderChannelForm() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-4">
-                            {/* <div className="flex items-center gap-2">
-                                <h3 className="text-lg font-semibold">Basic Information</h3>
-                                <FormField
-                                    control={form.control}
-                                    name="isActive"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-row items-center space-x-2">
-                                            <FormControl>
-                                                <Switch
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="text-sm font-normal">Active</FormLabel>
-                                        </FormItem>
-                                    )}
-                                />
-                            </div> */}
+
                             <Separator />
                             <TextField
                                 form={form}
@@ -148,9 +131,9 @@ export function OrderChannelForm() {
                                 <SwitchItem
                                     form={form}
                                     name="type"
-                                    label="Payment mothod"
+                                    label="Type"
                                     options={ORDER_CHANNEL_TYPES}
-                                    placeholder="Payment method type "
+                                    placeholder="Order type "
                                 />
                                 <TextField
                                     form={form}

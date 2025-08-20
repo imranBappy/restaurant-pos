@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/select"
 import { KITCHEN_ORDER_QUERY, KITCHEN_ORDER_TYPE, KOT_STATUS_TYPES } from "@/graphql/kitchen";
 import { useToast } from "@/hooks/use-toast";
-import { ORDER_ITEM_TYPE } from "@/graphql/product";
+import { MdTableBar } from "react-icons/md";
+
 export const statusColorVariants = {
     PENDING: {
         bg: "bg-yellow-200 dark:bg-yellow-800/20",
@@ -70,8 +71,8 @@ export const statusColorVariants = {
     }
 };
 
-const KOTCard = ({ kot }: { kot: KITCHEN_ORDER_TYPE}) => {
-    const getStatusStyles = (status:string) => statusColorVariants[status] || statusColorVariants.DEFAULT;
+const KOTCard = ({ kot }: { kot: KITCHEN_ORDER_TYPE }) => {
+    const getStatusStyles = (status: string) => statusColorVariants[status] || statusColorVariants.DEFAULT;
     const { toast } = useToast()
 
     const [update] = useMutation(KOT_STATUS_UPDATE, {
@@ -91,7 +92,7 @@ const KOTCard = ({ kot }: { kot: KITCHEN_ORDER_TYPE}) => {
     })
     const statusStyles = getStatusStyles(kot.status);
 
-    const handleUpdateKOTStatus = (status:string) => {
+    const handleUpdateKOTStatus = (status: string) => {
         update({
             variables: {
                 kotId: kot.id,
@@ -152,11 +153,18 @@ const KOTCard = ({ kot }: { kot: KITCHEN_ORDER_TYPE}) => {
                         kot.order?.user?.email && <span className="text-gray-400">({kot.order?.user?.email})</span>
                     }
                 </div>
+                {
+                    kot.tables && <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <MdTableBar className="text-green-500" />
+                        <span >{kot.tables}</span>
+                    </div>
+                }
+
                 <div className="flex items-center gap-2 text-sm">
                     <span className="font-medium text-indigo-700 dark:text-indigo-300">Order #</span>
                     <span className="font-bold text-indigo-900 dark:text-indigo-100">{kot.order.orderId}</span>
                 </div>
-               
+
             </div>
             {/* Order Items */}
             <div className="mt-3">

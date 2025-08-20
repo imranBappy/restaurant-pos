@@ -25,7 +25,7 @@ export interface FilterState {
 }
 
 type FLOOR_NODE_TYPE = {
-    node: FLOOR_TYPE
+    node: FLOOR_TABLES_TYPE
 }
 
 export const mapFloorsData = (edges: FLOOR_NODE_TYPE[]): FLOOR_TABLES_TYPE[] =>
@@ -35,7 +35,7 @@ export const mapFloorsData = (edges: FLOOR_NODE_TYPE[]): FLOOR_TABLES_TYPE[] =>
         createdAt: node.createdAt,
         isActive: node.isActive,
         isBooked: node.isBooked,
-        floorTables: node.floorTables
+        floor: node.floor
     })) || [];
 
 
